@@ -31,9 +31,10 @@ const CustomModal = () => {
 
       <Button variant={"outlined"} startIcon={<IoMdAddCircle size={48} color='primary.main'/>} onClick={handleOpen} sx={{
         backgroundColor: '#d9f1ff',
+
         fontSize: '2rem',
         width: '20rem',
-        height: '4rem',
+        height: '8rem',
         color: 'primary.main',
         '&:hover': {
           backgroundColor: '',
