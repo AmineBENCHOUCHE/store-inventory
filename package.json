@@ -7,8 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-   
+    "lint": "next lint"
   },
   "dependencies": {
     "@emotion/react": "^11.13.0",
@@ -19,6 +18,7 @@
     "express": "^4.19.2",
     "firebase": "^10.12.4",
     "framer-motion": "^11.3.20",
+    "fs": "^0.0.1-security",
     "next": "^14.2.5",
     "next-auth": "^4.24.7",
     "react": "^18",
