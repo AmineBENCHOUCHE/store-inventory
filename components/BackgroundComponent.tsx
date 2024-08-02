@@ -12,7 +12,7 @@ const BackgroundComponent = () => {
                 height: '100vh',
                 width: '100vw',
                 opacity: 0.4, // Adjust the transparency here
-                position: 'absolute'
+                position: 'fixed',
 
             }}
         >
