@@ -56,7 +56,7 @@ const PantryGallery = () => {
 
         <Box width='100%' height='100%' display={'flex'} flexDirection={'column'} alignItems={'center'} justifyContent={'center'} bgcolor={'#f0f0f0f'} gap={1} zIndex={10}>
             <SearchComponent searchWord={searchWord} handleSearch={handleSearch} />
-            <Stack width="80vw" height='800px' className='mt-10' >
+            <Stack width="80vw" height='full' className='mt-10' >
 
                 {pantryList.map(({ id, name, qty, expired_date }, index) => (
                     <Box key={index} display='flex' minHeight='100px' alignItems='center' justifyContent='center' gap={20}
