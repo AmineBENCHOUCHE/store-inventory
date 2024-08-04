@@ -17,24 +17,14 @@ const CURRENT_DATE = getTodayDate();
 const PantryGallery = ({ isDemo }: { isDemo: boolean }) => {
     //state quantity
     const [item, setItem] = useState<PantryItem>({ id: '', category: '', name: '', qty: 1, expired_date: '' });
-    const [qty, setQty] = useState(0)
     const [searchWord, setSearchWord] = useState("")
     const [open, setOpen] = useState(false);
     const [selected, setSelected] = useState<PantryItem>({ id: '', category: '', name: '', qty: 1, expired_date: '' });
-    const [labelList, setLabelList] = useState<string[]>([]);
-
-
+ 
     //state for editing item
     const [pantryList, setPantryList] = useState<PantryItem[]>([])
 
-    const handleDeleteDemo = (itemId: string, labelList: string[]) => {
-        const filteredList = labelList.filter(label => label !== itemId);
-        setLabelList(filteredList);
-    }
-
-    useEffect(() => { updatePantry() }, []);
-
-
+    useEffect(() => { updatePantry() }, [])
 
     const updatePantry = async () => {
 
@@ -59,7 +49,8 @@ const PantryGallery = ({ isDemo }: { isDemo: boolean }) => {
 
         }
     }
-    const handleOpen = () => setOpen(true);;
+    const handleOpen = () => setOpen(true);
+
     const handleClose = (prev: boolean) => {
         setOpen(!prev)
         setSelected({ id: '', category: '', name: '', qty: 0, expired_date: '' })
@@ -252,35 +243,13 @@ const PantryGallery = ({ isDemo }: { isDemo: boolean }) => {
             </Stack>
             }
 
-            {/* Button to open modal  */}
+            
 
-            {/* //render items Demo*/}
-            {isDemo && labelList &&
-                <Stack height='full' className='mt-10 w-[50vw] sm:w-[80vw] max-h-[500px]' >
-                    <Container className='h-full  w-full '>
-                        {labelList.map((label: string, index) => (
-                            <Box key={index}
-                            //         className="flex justify-between sm:min-h-[100px] min-h-[50px] 
-                            // w-[80vw] md:w-[50vw] text-sm rounded-t-lg items-center gap-4 px-4 md:px-8 md:py-4 py-2  bg-white md:hover:h-[115px]  hover:ml-1" 
-                            className="flex justify-between items-center rounded-t-lg sm:min-h-[100px] min-h-[50px]  sm:gap-4 w-[100%] px-10 sm:px-4 md:px-8 sm:w-[100%] bg-white md:hover:h-[115px] hover:ml-1" gap={20}
-                            
-                            style={{
-                                backgroundColor: index % 2 === 0 ? '#172554' : '#06b6d4'
-                            }}
-                            >
-                                <Typography variant="h4" textAlign='left' color={'#cbd5e1'} sx={{ minWidth: 200 }} className="text-2xl md:text-4xl">
-                                    {/* //capitalize first letter */}
-                                    {label.slice(1).charAt(0).toUpperCase() + label.slice(2)}
-                                </Typography>
-                                <FaTrash cursor={'pointer'} className="w-6 h-6" color='#6F73D2' onClick={() => handleDeleteDemo(label, labelList)} />
-                            </Box>
-                        ))}
-                    </Container>
-                </Stack>
-            }
-            <div className='flex justify-center items-centrer mt-10'>
+          
+            {/* Button to open modal  */}
+           {!isDemo && <div className='flex justify-center items-centrer mt-10'>
                 <Shimmer title="ADD" icon={<FaPlusCircle />} handleClick={handleAdd} className='w-20' />
-            </div>
+            </div>}
         </div>
 
     )

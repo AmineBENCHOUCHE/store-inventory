@@ -3,15 +3,17 @@
 import React, { useState, useRef, useEffect } from "react";
 import { TbPhotoSensor3 } from "react-icons/tb";
 import { AiFillOpenAI } from "react-icons/ai";
+import PantryGallery from "./PantryGallery";
+import { Box, Container, Stack, Typography } from "@mui/material";
+import { FaTrash } from "react-icons/fa";
 
 const CameraComponent = ({ isDemo }: { isDemo: boolean }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const photoRef = useRef<HTMLCanvasElement | null>(null);
 
-
   const [hasPhoto, setHasPhoto] = useState(false);
 
-  const [labelList, setLabelList] = useState<string[]>(["-hero", "-new", "-cancel"]);
+  const [labelList, setLabelList] = useState<string[]>([]);
 
  
   const canvasWidth = 414;
@@ -36,7 +38,7 @@ const CameraComponent = ({ isDemo }: { isDemo: boolean }) => {
   const canvas = photoRef.current;
 
   const handleAddItemDemo = async () => {
-
+    console.log(isDemo)
     // transform image to base64
     const imageData = photoRef.current?.toDataURL('image/png')
     // Make the request to the api endpoint
@@ -50,6 +52,7 @@ const CameraComponent = ({ isDemo }: { isDemo: boolean }) => {
     const response = await req.json()
 
     console.log("content", response)
+
     if (response) {
 
       setLabelList(response.content.split("\n"));
@@ -80,7 +83,10 @@ const CameraComponent = ({ isDemo }: { isDemo: boolean }) => {
   }, [videoRef]);
 
 
-
+    const handleDeleteDemo = (itemId: string, labelList: string[]) => {
+      const filteredList = labelList.filter(label => label !== itemId);
+      setLabelList(filteredList);
+  }
 
 
   return (
@@ -108,8 +114,8 @@ const CameraComponent = ({ isDemo }: { isDemo: boolean }) => {
 
         {hasPhoto &&
         
-
-            <button
+        
+        <button
               onClick={handleAddItemDemo}
               className="mt-10 mb-10 relative z-50 inline-flex w-fit h-24  overflow-hidden rounded-full p-1 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50">
               <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]" />
@@ -120,6 +126,33 @@ const CameraComponent = ({ isDemo }: { isDemo: boolean }) => {
             </button>
          
         }
+          {/* //render items Demo*/}
+        {labelList && 
+          
+            <Stack height='full' className='mt-10 w-[50vw] sm:w-[80vw] max-h-[500px]' >
+                <Container className='h-full  w-full '>
+                    {labelList.map((label: string, index) => (
+                        <Box key={index}
+                        //         className="flex justify-between sm:min-h-[100px] min-h-[50px] 
+                        // w-[80vw] md:w-[50vw] text-sm rounded-t-lg items-center gap-4 px-4 md:px-8 md:py-4 py-2  bg-white md:hover:h-[115px]  hover:ml-1" 
+                        className="flex justify-between items-center rounded-t-lg sm:min-h-[100px] min-h-[50px]  sm:gap-4 w-[100%] px-10 sm:px-4 md:px-8 sm:w-[100%] bg-white md:hover:h-[115px] hover:ml-1" gap={20}
+                        
+                        style={{
+                            backgroundColor: index % 2 === 0 ? '#172554' : '#06b6d4'
+                        }}
+                        >
+                            <Typography variant="h4" textAlign='left' color={'#cbd5e1'} sx={{ minWidth: 200 }} className="text-2xl md:text-4xl">
+                                {/* //capitalize first letter */}
+                                {label.slice(1).charAt(0).toUpperCase() + label.slice(2)}
+                            </Typography>
+                            <FaTrash cursor={'pointer'} className="w-6 h-6" color='#6F73D2' onClick={() => handleDeleteDemo(label, labelList)} />
+                        </Box>
+                    ))}
+                </Container>
+            </Stack>
+            }
+        
+        
       </div>
     </div>
 
