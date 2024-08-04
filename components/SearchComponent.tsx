@@ -3,17 +3,21 @@ import React, { useState } from 'react'
 import { PantryItem } from './PantryGallery'
 import { FaSearch } from 'react-icons/fa'
 
-const SearchComponent = ({ searchWord, handleSearch }: { searchWord: string, handleSearch: React.ChangeEventHandler<HTMLInputElement> }) => {
+const SearchComponent = ({ searchWord, handleSearch, isVisible = false }: { searchWord: string, handleSearch: React.ChangeEventHandler<HTMLInputElement>, isVisible: boolean }) => {
 
     return (
-        <div className='flex'>
-            <input type="search" name="search" id="search" placeholder='Search an item'
-                value={searchWord}
-                className='p-4 text-2xl min-w-[50vw] text-black'
-                onChange={handleSearch}
-            />
+        <>
+            {isVisible && <div className='flex items-center pr-4  xl:w-[30vw] border border-slate-200 rounded-lg'>
+                <input type="search" name="search" id="search" placeholder='Search an item'
+                    value={searchWord}
+                    className='p-2 sm:p-4 w-full bg-transparent focus:outline-none text-sm sm:text-base md:text-xl text-slate-100'
+                    onChange={handleSearch}
+                />
+                <FaSearch size={22} />
 
-        </div>
+            </div>
+            }
+        </>
     )
 }
 

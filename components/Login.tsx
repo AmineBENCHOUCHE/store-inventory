@@ -2,8 +2,8 @@
 import { signIn } from 'next-auth/react'
 import React from 'react'
 
-import { signOut, useSession } from "next-auth/react";
-import { Button, Typography } from '@mui/material';
+import { useSession } from "next-auth/react";
+import { Typography } from '@mui/material';
 
 
 const Login = () => {
