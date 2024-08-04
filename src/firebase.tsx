@@ -46,16 +46,17 @@ const getPantryItems = async (): Promise<PantryItem[]> => {
 
 // Functions to add, delete, and update items in the database
 type PantryItemWithoutId = Omit<PantryItem, 'id'>;
-const addItem = async ({ name, qty, expired_date }: PantryItemWithoutId) => {
+const addItem = async ({category,  name, qty, expired_date }: PantryItemWithoutId) => {
     try {
         // check if exists in db
         const docRef = await addDoc(colRef, {
+            category,
             name,
             qty,
             expired_date,
         })
         let pantryList: PantryItem[] = []
-        pantryList.push({ id: docRef.id, ...{ name, qty, expired_date } })
+        pantryList.push({ id: docRef.id, ...{ category, name, qty, expired_date } })
         return pantryList;
         /*
         if (docRef.id in queryOrderedByExpirationDate) {
@@ -70,6 +71,7 @@ const addItem = async ({ name, qty, expired_date }: PantryItemWithoutId) => {
 
 }
 
+//delete
 const deleteItem = async (id: string, pantryList: PantryItem[]) => {
     const docRef = doc(colRef, id);
     await deleteDoc(docRef)
@@ -78,11 +80,19 @@ const deleteItem = async (id: string, pantryList: PantryItem[]) => {
     console.log("Document successfully deleted!");
 }
 
+//update
+
+const updateItem = async (id: string, updatedItem: PantryItem) => {
+    const docRef = doc(colRef, id);
+    await setDoc(docRef, updatedItem);
+    console.log("Document successfully updated!");
+}
+
 const getTodayDate = () => {
     const date = new Date();
     const currentDate = date.toJSON().slice(0, 10);
     return currentDate;
 }
 
-export { getPantryItems, addItem, deleteItem, getTodayDate }
+export { getPantryItems, addItem, deleteItem, updateItem, getTodayDate }
 

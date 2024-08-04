@@ -19,7 +19,7 @@ const Title = () => {
         },
         {
             text: "Store Inventory",
-            className: "dark:text-blue-500",
+            className: "dark:text-cyan-500",
         },
         {
             text: "enhanced by AI",
