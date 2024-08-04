@@ -7,7 +7,7 @@ const SearchComponent = ({ searchWord, handleSearch, isVisible = false }: { sear
 
     return (
         <>
-            {isVisible && <div className='flex items-center pr-4  xl:w-[30vw] border border-slate-200 rounded-lg'>
+            {isVisible && <div className='flex items-center pr-4   border border-slate-400 rounded-lg'>
                 <input type="search" name="search" id="search" placeholder='Search an item'
                     value={searchWord}
                     className='p-2 sm:p-4 w-full bg-transparent focus:outline-none text-sm sm:text-base md:text-xl text-slate-100'

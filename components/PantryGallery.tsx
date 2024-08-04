@@ -2,11 +2,12 @@
 
 import { Box, Button, Container, FormControl, InputLabel, MenuItem, Modal, Select, Stack, Table, TextField, Typography } from '@mui/material'
 import React from 'react'
-import { FaEdit, FaTrash } from 'react-icons/fa'
+import { FaEdit, FaPlusCircle, FaTrash } from 'react-icons/fa'
 import { deleteItem, getPantryItems, updateItem, getTodayDate, addItem } from '../src/firebase'
 import { useEffect, useState } from "react";
 import SearchComponent from './SearchComponent'
 import { categories } from '@/lib/data'
+import Shimmer from './ui/Shimmer'
 
 
 export type PantryItem = { id: string, category: string, name: string, qty: number, expired_date: string }
@@ -15,22 +16,23 @@ const CURRENT_DATE = getTodayDate();
 
 const PantryGallery = ({ isDemo }: { isDemo: boolean }) => {
     //state quantity
-    const [item, setItem] = useState<PantryItem>({ id: '', category: "", name: '', qty: 0, expired_date: '' });
+    const [item, setItem] = useState<PantryItem>({ id: '', category: '', name: '', qty: 1, expired_date: '' });
+    const [qty, setQty] = useState(0)
     const [searchWord, setSearchWord] = useState("")
     const [open, setOpen] = useState(false);
-    const [selected, setSelected] = useState<PantryItem>({ id: '', category: '', name: '', qty: 0, expired_date: '' });
+    const [selected, setSelected] = useState<PantryItem>({ id: '', category: '', name: '', qty: 1, expired_date: '' });
     const [labelList, setLabelList] = useState<string[]>([]);
 
 
     //state for editing item
-    const [pantryList, setPantryList] = useState<PantryItem[]>([ ])
+    const [pantryList, setPantryList] = useState<PantryItem[]>([])
 
     const handleDeleteDemo = (itemId: string, labelList: string[]) => {
         const filteredList = labelList.filter(label => label !== itemId);
         setLabelList(filteredList);
     }
 
-    useEffect(() => { updatePantry() }, [pantryList]);
+    useEffect(() => { updatePantry() }, []);
 
 
 
@@ -44,6 +46,7 @@ const PantryGallery = ({ isDemo }: { isDemo: boolean }) => {
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newSearchWord = e.target.value.toLowerCase();
+        console.log(newSearchWord);
         setSearchWord(newSearchWord);
 
         if (newSearchWord === "") {
@@ -57,8 +60,18 @@ const PantryGallery = ({ isDemo }: { isDemo: boolean }) => {
         }
     }
     const handleOpen = () => setOpen(true);;
-    const handleClose = (prev: boolean) => setOpen(!prev);
+    const handleClose = (prev: boolean) => {
+        setOpen(!prev)
+        setSelected({ id: '', category: '', name: '', qty: 0, expired_date: '' })
 
+    };
+
+    const handleAdd = () => {
+        handleOpen();
+        console.log("Add item", item,);
+        setSelected({ id: '', category: '', name: '', qty: 0, expired_date: '' })
+
+    }
     const handleEdit = (itemID: string) => {
         handleOpen();
         console.log(itemID);
@@ -79,7 +92,7 @@ const PantryGallery = ({ isDemo }: { isDemo: boolean }) => {
     return (
 
 
-        <Box display={'flex'} flexDirection={'column'} alignItems={'center'} bgcolor={'#f0f0f0f'} gap={2} zIndex={10} className="justify-center xl:w-[40vw] w-[80vw] h-fit ">
+        <div  className="flex flex-col align-center justify-center gap-2 z-10 xl:w-[40vw] w-full  h-fit ">
             {!isDemo && <SearchComponent isVisible={!isDemo} searchWord={searchWord} handleSearch={handleSearch} />}
             {!isDemo && <Stack height='full' className='mt-4 w-full  max-h-[500px]' >
                 <Container className='h-fit  w-full'>
@@ -93,7 +106,7 @@ const PantryGallery = ({ isDemo }: { isDemo: boolean }) => {
                                 }}
                             >
                                 <Typography variant="h4" textAlign='left' sx={{ maxWidth: 300 }}
-                                 className="md:text-xl sm:text-xl text-sm  w-fit min-w-[10vw] lg:text-4xl text-slate-100 ">
+                                    className="md:text-xl sm:text-xl text-sm  w-fit min-w-[10vw] lg:text-4xl text-slate-100 ">
                                     {/* //capitalize first letter */}
                                     {name.charAt(0).toUpperCase() + name.slice(1)}
                                     {new Date(expired_date) < new Date(CURRENT_DATE) && " 🤢 "}
@@ -122,7 +135,7 @@ const PantryGallery = ({ isDemo }: { isDemo: boolean }) => {
                                 <Box className="flex flex-col rounded-xl justify-center items-center  w-[50vw] min-h-[400px] ml-[25%] mt-[10%] bg-slate-400">
 
                                     <Typography id="modal-modal-title" variant="h4" fontWeight={'bold'} color='#020617' mb={2}>
-                                        {selected ? "Edit Item" : "Add Item"}
+                                        {selected.id ? "Edit Item" : "Add Item"}
                                     </Typography>
                                     <Stack width={'80%'} direction={'column'} >
                                         <FormControl>
@@ -130,11 +143,13 @@ const PantryGallery = ({ isDemo }: { isDemo: boolean }) => {
                                             <Select
                                                 id="categories"
                                                 label="Category"
-                                                value={selected?.category || ''}
+                                                value={selected?.category || item.category}
                                                 fullWidth
                                                 className='mb-4'
-                                                onChange={(e) => {selected? 
-                                                    setSelected((prev) => ({ ...prev, category: e.target.value })) : setItem((prev) => ({ ...prev, category: e.target.value }))
+                                                onChange={(e) => {
+                                                    selected.id ?
+                                                    setSelected((prev) => ({ ...prev, category: e.target.value })) :
+                                                    setItem((prev) => ({ ...prev, category: e.target.value }))
                                                 }}
                                             >
                                                 {categories.map((category, index) => (
@@ -151,29 +166,33 @@ const PantryGallery = ({ isDemo }: { isDemo: boolean }) => {
                                                 variant="standard"
                                                 fullWidth
                                                 className='mb-4'
-                                                value={selected?.name || ''}
-                                                onChange={(e) =>
-                                                    {selected? 
-                                                        setSelected(prev => ({ ...prev, name: e.target.value })):
-                                                    setItem(prev => ({ ...prev, name: e.target.value }))}}
+                                                value={selected?.name || item.name}
+                                                onChange={(e) => {
+                                                    selected.id ?
+                                                    setSelected(prev => ({ ...prev, name: e.target.value })) :
+                                                    setItem(prev => ({ ...prev, name: e.target.value }))
+                                                }}
                                             />
 
                                             <TextField
                                                 id="filled-basic"
                                                 label="Qty"
-                                                type='number'
                                                 color='secondary'
                                                 variant="standard"
                                                 fullWidth
                                                 className='mb-4'
-                                                value={selected?.qty.toString() || ''}
-                                                onChange={(e) => 
-                                                    selected ? setSelected((prev) => ({ ...prev, qty: Number(e.target.value) })):
-                                                    setItem(prev => ({ ...prev, qty: Number(e.target.value) }))
-                                                }
-                                            // Add min={0} if applicable
+                                                value={selected.id? selected.qty.toString() : item.qty.toString()}
+                                                onChange={(e) => {
+                                                    const newQty = (e.target.value);
+                
+                                                    console.log(newQty)
+                                                    if (selected.id) {
+                                                        setSelected(prev => ({ ...prev, qty: Number(newQty) }));
+                                                    } else {
+                                                        setItem(prev => ({ ...prev, qty: Number(newQty)  }));
+                                                    }
+                                                }}
                                             />
-
                                             <TextField
                                                 id="filled-basic"
                                                 label="Expired date (yyyy-mm-dd)"
@@ -181,10 +200,12 @@ const PantryGallery = ({ isDemo }: { isDemo: boolean }) => {
                                                 variant="standard"
                                                 fullWidth
                                                 className='mb-4 text-slate-100 tracking-wider'
-                                                value={selected?.expired_date || ''}
-                                                onChange={(e) => 
-                                                    selected? setSelected((prev) => ({ ...prev, expired_date: e.target.value}) ) : 
-                                                    setItem(prev => ({ ...prev, expired_date: e.target.value }))}
+                                                value={selected?.expired_date || item.expired_date}
+                                                onChange={(e) => {
+                                                    console.log(item)
+                                                    selected.id ? setSelected((prev) => ({ ...prev, expired_date: e.target.value })) :
+                                                        setItem(prev => ({ ...prev, expired_date: e.target.value }))
+                                                }}
                                             />
                                         </FormControl>
                                         <Button variant='contained' className='md:text-xl text-sm '
@@ -200,8 +221,10 @@ const PantryGallery = ({ isDemo }: { isDemo: boolean }) => {
                                                 },
                                             }}
                                             onClick={() => {
+                                                console.log(selected)
+                                                console.log(item)
                                                 {
-                                                    selected ?
+                                                    selected.id ?
                                                         updateItem(selected.id, selected) :
                                                         addItem(
                                                             {
@@ -212,11 +235,12 @@ const PantryGallery = ({ isDemo }: { isDemo: boolean }) => {
                                                             })
                                                 }
                                                 // reset of the input field
+                                                updatePantry()
                                                 setItem({ id: '', category: '', name: '', qty: 0, expired_date: '' })
                                                 handleClose(open)
                                             }
                                             }>
-                                            {selected ? "EDIT" : "ADD"}
+                                            {selected.id ? "EDIT" : "ADD"}
                                         </Button>
                                     </Stack>
                                 </Box>
@@ -228,19 +252,21 @@ const PantryGallery = ({ isDemo }: { isDemo: boolean }) => {
             </Stack>
             }
 
+            {/* Button to open modal  */}
+
             {/* //render items Demo*/}
             {isDemo && labelList &&
                 <Stack height='full' className='mt-10 w-[50vw] sm:w-[80vw] max-h-[500px]' >
                     <Container className='h-full  w-full '>
                         {labelList.map((label: string, index) => (
                             <Box key={index}
-                                //         className="flex justify-between sm:min-h-[100px] min-h-[50px] 
-                                // w-[80vw] md:w-[50vw] text-sm rounded-t-lg items-center gap-4 px-4 md:px-8 md:py-4 py-2  bg-white md:hover:h-[115px]  hover:ml-1" 
-                                className="flex justify-between items-center rounded-t-lg sm:min-h-[100px] min-h-[50px]  sm:gap-4 w-[100%] px-10 sm:px-4 md:px-8 sm:w-[100%] bg-white md:hover:h-[115px] hover:ml-1" gap={20}
-
-                                style={{
-                                    backgroundColor: index % 2 === 0 ? '#172554' : '#06b6d4'
-                                }}
+                            //         className="flex justify-between sm:min-h-[100px] min-h-[50px] 
+                            // w-[80vw] md:w-[50vw] text-sm rounded-t-lg items-center gap-4 px-4 md:px-8 md:py-4 py-2  bg-white md:hover:h-[115px]  hover:ml-1" 
+                            className="flex justify-between items-center rounded-t-lg sm:min-h-[100px] min-h-[50px]  sm:gap-4 w-[100%] px-10 sm:px-4 md:px-8 sm:w-[100%] bg-white md:hover:h-[115px] hover:ml-1" gap={20}
+                            
+                            style={{
+                                backgroundColor: index % 2 === 0 ? '#172554' : '#06b6d4'
+                            }}
                             >
                                 <Typography variant="h4" textAlign='left' color={'#cbd5e1'} sx={{ minWidth: 200 }} className="text-2xl md:text-4xl">
                                     {/* //capitalize first letter */}
@@ -252,7 +278,10 @@ const PantryGallery = ({ isDemo }: { isDemo: boolean }) => {
                     </Container>
                 </Stack>
             }
-        </Box>
+            <div className='flex justify-center items-centrer mt-10'>
+                <Shimmer title="ADD" icon={<FaPlusCircle />} handleClick={handleAdd} className='w-20' />
+            </div>
+        </div>
 
     )
 }

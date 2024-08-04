@@ -85,7 +85,9 @@ const deleteItem = async (id: string, pantryList: PantryItem[]) => {
 const updateItem = async (id: string, updatedItem: PantryItem) => {
     const docRef = doc(colRef, id);
     await setDoc(docRef, updatedItem);
+
     console.log("Document successfully updated!");
+    getPantryItems()
 }
 
 const getTodayDate = () => {
